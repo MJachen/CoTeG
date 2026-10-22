@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Graph-Regularized Tensor Completion and Graph Neural Network for Missing-Modality Brain MRI Classification</title>
+  <desc id="desc">A paper-style model architecture diagram showing incomplete multi-modal MRI input, graph-regularized Tucker tensor completion, tensor and graph branches, mask-aware mixture-of-experts fusion, and LGG/HGG prediction.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#44515f"/>
+    </marker>
+    <marker id="arrow-soft" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#7a8796"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-20%" width="120%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#1f2937" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .title { font: 700 30px Arial, Helvetica, sans-serif; fill: #1f2937; }
+      .subtitle { font: 400 15px Arial, Helvetica, sans-serif; fill: #64748b; }
+      .stage { font: 700 15px Arial, Helvetica, sans-serif; letter-spacing: 0.5px; fill: #475569; }
+      .box { rx: 18; ry: 18; stroke-width: 1.6; filter: url(#shadow); }
+      .input { fill: #dcecf7; stroke: #6d9fc3; }
+      .tensor { fill: #e8def5; stroke: #9a7fbd; }
+      .tbranch { fill: #dfefdf; stroke: #78a978; }
+      .gbranch { fill: #d9eff0; stroke: #6eaaad; }
+      .fusion { fill: #f6e2c8; stroke: #c59255; }
+      .output { fill: #f1f2f4; stroke: #9ca3af; }
+      .label { font: 700 18px Arial, Helvetica, sans-serif; fill: #1f2937; }
+      .text { font: 400 15px Arial, Helvetica, sans-serif; fill: #334155; }
+      .small { font: 400 13px Arial, Helvetica, sans-serif; fill: #475569; }
+      .formula { font: italic 16px "Times New Roman", Times, serif; fill: #273244; }
+      .arrow { stroke: #44515f; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .soft-arrow { stroke: #7a8796; stroke-width: 2; fill: none; marker-end: url(#arrow-soft); stroke-dasharray: 7 6; }
+      .mri { rx: 10; ry: 10; stroke-width: 1.2; }
+      .mri-label { font: 700 13px Arial, Helvetica, sans-serif; fill: #1f2937; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="900" fill="#ffffff"/>
+  <text x="800" y="48" text-anchor="middle" class="title">Graph-Regularized Tensor Completion and Graph Neural Network</text>
+  <text x="800" y="76" text-anchor="middle" class="subtitle">Missing-Modality Brain MRI Classification</text>
+
+  <text x="86" y="126" class="stage">INPUT</text>
+  <text x="456" y="126" class="stage">TENSOR COMPLETION</text>
+  <text x="640" y="348" class="stage">TENSOR BRANCH</text>
+  <text x="640" y="610" class="stage">GRAPH BRANCH</text>
+  <text x="1192" y="348" class="stage">FUSION</text>
+  <text x="1395" y="348" class="stage">OUTPUT</text>
+
+  <!-- Input box -->
+  <rect x="70" y="150" width="250" height="210" class="box input"/>
+  <text x="195" y="184" text-anchor="middle" class="label">Incomplete multi-modal MRI</text>
+  <text x="195" y="210" text-anchor="middle" class="small">observed modalities + missing mask</text>
+  <g transform="translate(97,232)">
+    <rect x="0" y="0" width="58" height="72" class="mri" fill="#9dc7e3" stroke="#5f91b6"/>
+    <path d="M10,50 C18,18 40,18 48,50" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.85"/>
+    <text x="29" y="92" text-anchor="middle" class="mri-label">T1</text>
+
+    <rect x="70" y="0" width="58" height="72" class="mri" fill="#b9d8ec" stroke="#5f91b6" opacity="0.35" stroke-dasharray="6 5"/>
+    <path d="M80,50 C88,18 110,18 118,50" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.55"/>
+    <text x="99" y="92" text-anchor="middle" class="mri-label" opacity="0.55">T1CE</text>
+
+    <rect x="140" y="0" width="58" height="72" class="mri" fill="#94c8e8" stroke="#5f91b6"/>
+    <path d="M150,50 C158,18 180,18 188,50" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.85"/>
+    <text x="169" y="92" text-anchor="middle" class="mri-label">T2</text>
+
+    <rect x="210" y="0" width="58" height="72" class="mri" fill="#b9d8ec" stroke="#5f91b6" opacity="0.35" stroke-dasharray="6 5"/>
+    <path d="M220,50 C228,18 250,18 258,50" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.55"/>
+    <text x="239" y="92" text-anchor="middle" class="mri-label" opacity="0.55">FLAIR</text>
+  </g>
+  <text x="195" y="340" text-anchor="middle" class="formula">&#937; = [1, 0, 1, 0]</text>
+
+  <!-- Tensor construction -->
+  <rect x="380" y="170" width="260" height="170" class="box input"/>
+  <text x="510" y="211" text-anchor="middle" class="label">Tensor construction</text>
+  <text x="510" y="243" text-anchor="middle" class="formula">X &#x2208; R<tspan baseline-shift="super" font-size="12">{S&#x00D7;M&#x00D7;N}</tspan></text>
+  <text x="510" y="274" text-anchor="middle" class="text">S = H &#x00D7; W &#x00D7; D</text>
+  <text x="510" y="300" text-anchor="middle" class="text">M = 4 modalities</text>
+  <text x="510" y="326" text-anchor="middle" class="text">N = number of subjects</text>
+
+  <!-- Tucker completion -->
+  <rect x="710" y="145" width="360" height="220" class="box tensor"/>
+  <text x="890" y="182" text-anchor="middle" class="label">Graph-Regularized Tucker</text>
+  <text x="890" y="207" text-anchor="middle" class="label">Tensor Completion</text>
+  <text x="890" y="240" text-anchor="middle" class="formula">X&#x0302; = G &#x00D7;<tspan baseline-shift="sub" font-size="12">1</tspan> U<tspan baseline-shift="sub" font-size="12">S</tspan> &#x00D7;<tspan baseline-shift="sub" font-size="12">2</tspan> U<tspan baseline-shift="sub" font-size="12">M</tspan> &#x00D7;<tspan baseline-shift="sub" font-size="12">3</tspan> U<tspan baseline-shift="sub" font-size="12">N</tspan></text>
+  <g transform="translate(760,270)">
+    <rect x="0" y="0" width="76" height="44" rx="10" fill="#f1e9fb" stroke="#9a7fbd"/>
+    <text x="38" y="28" text-anchor="middle" class="formula">G</text>
+    <rect x="94" y="0" width="76" height="44" rx="10" fill="#f1e9fb" stroke="#9a7fbd"/>
+    <text x="132" y="28" text-anchor="middle" class="formula">U<tspan baseline-shift="sub" font-size="11">S</tspan></text>
+    <rect x="188" y="0" width="76" height="44" rx="10" fill="#f1e9fb" stroke="#9a7fbd"/>
+    <text x="226" y="28" text-anchor="middle" class="formula">U<tspan baseline-shift="sub" font-size="11">M</tspan></text>
+    <rect x="282" y="0" width="76" height="44" rx="10" fill="#f1e9fb" stroke="#9a7fbd"/>
+    <text x="320" y="28" text-anchor="middle" class="formula">U<tspan baseline-shift="sub" font-size="11">N</tspan></text>
+  </g>
+  <text x="890" y="346" text-anchor="middle" class="small">spatial, modality, and subject graph regularization</text>
+
+  <!-- Completed tensor -->
+  <rect x="1138" y="182" width="220" height="136" class="box tensor"/>
+  <text x="1248" y="222" text-anchor="middle" class="label">Completed tensor</text>
+  <text x="1248" y="258" text-anchor="middle" class="formula">X&#x0302;</text>
+  <text x="1248" y="286" text-anchor="middle" class="text">completed multimodal MRI</text>
+
+  <!-- Tensor branch -->
+  <rect x="520" y="385" width="220" height="104" class="box tbranch"/>
+  <text x="630" y="425" text-anchor="middle" class="label">Completed MRI</text>
+  <text x="630" y="454" text-anchor="middle" class="text">multi-modal volume</text>
+
+  <rect x="785" y="385" width="170" height="104" class="box tbranch"/>
+  <text x="870" y="430" text-anchor="middle" class="label">3D CNN</text>
+  <text x="870" y="458" text-anchor="middle" class="small">image features</text>
+
+  <rect x="1000" y="385" width="230" height="104" class="box tbranch"/>
+  <text x="1115" y="423" text-anchor="middle" class="label">Tensor Regression</text>
+  <text x="1115" y="449" text-anchor="middle" class="label">Layer</text>
+  <text x="1115" y="474" text-anchor="middle" class="formula">z<tspan baseline-shift="sub" font-size="11">t</tspan></text>
+
+  <!-- Graph branch -->
+  <rect x="520" y="645" width="190" height="104" class="box gbranch"/>
+  <text x="615" y="687" text-anchor="middle" class="label">Subject factor</text>
+  <text x="615" y="719" text-anchor="middle" class="formula">U<tspan baseline-shift="sub" font-size="11">N</tspan></text>
+
+  <rect x="755" y="645" width="230" height="104" class="box gbranch"/>
+  <text x="870" y="684" text-anchor="middle" class="label">KNN graph</text>
+  <text x="870" y="713" text-anchor="middle" class="formula">A = KNN(U<tspan baseline-shift="sub" font-size="11">N</tspan>)</text>
+
+  <rect x="1030" y="645" width="170" height="104" class="box gbranch"/>
+  <text x="1115" y="690" text-anchor="middle" class="label">GraphSAGE</text>
+  <text x="1115" y="719" text-anchor="middle" class="formula">z<tspan baseline-shift="sub" font-size="11">g</tspan></text>
+
+  <!-- Fusion -->
+  <rect x="1265" y="455" width="230" height="158" class="box fusion"/>
+  <text x="1380" y="494" text-anchor="middle" class="label">Mask-aware MoE</text>
+  <text x="1380" y="520" text-anchor="middle" class="label">Fusion</text>
+  <text x="1380" y="552" text-anchor="middle" class="formula">&#945; = gate(z<tspan baseline-shift="sub" font-size="11">t</tspan>, z<tspan baseline-shift="sub" font-size="11">g</tspan>, &#937;)</text>
+  <text x="1380" y="581" text-anchor="middle" class="formula">logits = &#945; f<tspan baseline-shift="sub" font-size="11">t</tspan>(z<tspan baseline-shift="sub" font-size="11">t</tspan>) + (1-&#945;) f<tspan baseline-shift="sub" font-size="11">g</tspan>(z<tspan baseline-shift="sub" font-size="11">g</tspan>)</text>
+
+  <!-- Output -->
+  <rect x="1322" y="690" width="180" height="112" class="box output"/>
+  <text x="1412" y="731" text-anchor="middle" class="label">Classification</text>
+  <text x="1412" y="759" text-anchor="middle" class="text">logits</text>
+  <text x="1412" y="786" text-anchor="middle" class="text">LGG / HGG</text>
+
+  <!-- Main arrows -->
+  <path class="arrow" d="M320,255 C342,255 356,255 380,255"/>
+  <path class="arrow" d="M640,255 C668,255 682,255 710,255"/>
+  <path class="arrow" d="M1070,255 C1098,255 1112,250 1138,250"/>
+
+  <!-- Completed tensor to tensor branch -->
+  <path class="arrow" d="M1248,318 C1248,358 740,340 660,385"/>
+  <path class="arrow" d="M740,437 C758,437 766,437 785,437"/>
+  <path class="arrow" d="M955,437 C974,437 982,437 1000,437"/>
+
+  <!-- Subject factor to graph branch -->
+  <path class="arrow" d="M1035,314 C1095,390 960,575 710,666"/>
+  <path class="arrow" d="M710,697 C728,697 738,697 755,697"/>
+  <path class="arrow" d="M985,697 C1004,697 1012,697 1030,697"/>
+
+  <!-- Branches to fusion -->
+  <path class="arrow" d="M1230,437 C1250,448 1255,472 1265,500"/>
+  <path class="arrow" d="M1200,697 C1240,685 1270,630 1293,613"/>
+  <path class="soft-arrow" d="M255,341 C520,545 1010,535 1265,555"/>
+  <text x="625" y="552" class="small" fill="#64748b">missing mask &#937;</text>
+
+  <!-- Fusion to output -->
+  <path class="arrow" d="M1412,613 C1412,642 1412,662 1412,690"/>
+</svg>

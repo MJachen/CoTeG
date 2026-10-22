@@ -1,0 +1,31 @@
+flowchart LR
+  classDef input fill:#dcecf7,stroke:#6d9fc3,stroke-width:1.4px,color:#1f3445
+  classDef tensor fill:#e8def5,stroke:#9a7fbd,stroke-width:1.4px,color:#2e2440
+  classDef tbranch fill:#dfefdf,stroke:#78a978,stroke-width:1.4px,color:#203a24
+  classDef gbranch fill:#d9eff0,stroke:#6eaaad,stroke-width:1.4px,color:#1d3a3d
+  classDef fusion fill:#f6e2c8,stroke:#c59255,stroke-width:1.4px,color:#46301b
+  classDef output fill:#f1f2f4,stroke:#9ca3af,stroke-width:1.4px,color:#252a31
+
+  A["Incomplete multi-modal brain MRI<br/>T1, T1CE, T2, FLAIR<br/>missing mask Omega"]:::input
+  B["Tensor construction<br/>X in R^{S x M x N}<br/>S=H x W x D, M=4"]:::input
+  C["Graph-Regularized Tucker<br/>Tensor Completion<br/>X_hat = G x1 U_S x2 U_M x3 U_N"]:::tensor
+  D["Completed tensor<br/>X_hat"]:::tensor
+
+  T1["Completed multimodal MRI"]:::tbranch
+  T2["3D CNN"]:::tbranch
+  T3["Tensor Regression Layer"]:::tbranch
+  T4["Tensor embedding z_t"]:::tbranch
+
+  G1["Subject factor U_N"]:::gbranch
+  G2["KNN graph construction<br/>A = KNN(U_N)"]:::gbranch
+  G3["GraphSAGE"]:::gbranch
+  G4["Graph embedding z_g"]:::gbranch
+
+  F["Mask-aware Mixture-of-Experts Fusion<br/>logits = alpha f_t(z_t) + (1-alpha) f_g(z_g)"]:::fusion
+  O["Classification logits<br/>Prediction: LGG / HGG"]:::output
+
+  A --> B --> C --> D
+  D --> T1 --> T2 --> T3 --> T4 --> F
+  C --> G1 --> G2 --> G3 --> G4 --> F
+  A -. Omega .-> F
+  F --> O

@@ -1,0 +1,72 @@
+flowchart TD
+  A["Raw BraTS-style MRI cases<br/>T1, T1CE, T2, FLAIR + binary label"]
+  B["predataset.py<br/>load_case_4mod + make_folds"]
+  C["Full tensor pack<br/>X_full: (N,4,H,W,D)<br/>y: (N,)"]
+  D["modality_groups.py<br/>15 present-modality groups"]
+  E["Eval missing-modality packs<br/>X_miss: (N,4,H,W,D)<br/>Omega: (N,4,1,1,1)"]
+  F["GRNNTCtrain.py<br/>Tucker3DModel.chunk_forward"]
+  G["Train tensor representation<br/>X_true_flat: (S,4,N)<br/>S=H*W*D"]
+  H["Non-negative Tucker factors<br/>G: (rS,rM,rN)<br/>U_S: (S,rS)<br/>U_M: (4,rM)<br/>U_N: (N,rN)"]
+  I["Completion train loss<br/>masked MSE + spatial smoothness<br/>+ modality graph + subject graph"]
+  J["Completed train tensor<br/>X_hat_train_5d.pt: (H,W,D,4,N)<br/>tucker_factors_train.pt"]
+  K["GRNNTCeval.py<br/>optimize eval U_N only"]
+  L["Completed val/test packs<br/>X_hat: (N,4,H,W,D)<br/>U_N: (N,rN)<br/>Omega mask"]
+
+  M["threebranchesv3.py<br/>CompletedTrainDataset3D"]
+  N["Tensor branch input<br/>observed X_full * Omega<br/>+ completed X_hat * (1-Omega)<br/>(B,4,D,H,W)"]
+  O["twotrlv2.py<br/>ConvTRLNet.forward"]
+  P["3D CNN features<br/>(B,64,D/8,H/8,W/8)"]
+  Q["twotrlv2.py<br/>TRL.forward"]
+  R["Tensor embedding z_t<br/>(B,8)<br/>branch logits: (B,2)"]
+
+  S["zerotoolfunc.py<br/>knn_graph_pytorch(U_N,k=10)"]
+  T["edge_index adjacency<br/>(2,N*k)"]
+  U["twognn.py<br/>GNNBranch.forward<br/>GraphSAGE x2"]
+  V["GNN embedding z_g<br/>(N,32)<br/>branch logits: (N,2)"]
+
+  W["fusiontraintest_brats.py<br/>load frozen branches<br/>stream val/test groups"]
+  X["MoEFusion.forward<br/>proj_t, proj_g, abs diff, product, Omega mask"]
+  Y["Tensor/GNN experts + gate alpha<br/>logits = alpha*expert_t + (1-alpha)*expert_g"]
+  Z["Prediction logits/probability<br/>(B,2), P(HGG)"]
+  AA["Training losses<br/>branch: FocalLoss / CE<br/>fusion: CE or FocalLoss"]
+  AB["Metrics and saved outputs<br/>metrics JSON, ROC TXT, sample CSV"]
+
+  A --> B
+  B --> C
+  D --> E
+  C --> E
+  C --> G
+  G --> F
+  F --> H
+  H --> I
+  I --> J
+  E --> K
+  J --> K
+  K --> L
+
+  C --> M
+  J --> M
+  D --> M
+  M --> N
+  N --> O
+  O --> P
+  P --> Q
+  Q --> R
+
+  H --> S
+  L --> S
+  S --> T
+  H --> U
+  T --> U
+  U --> V
+
+  R --> W
+  V --> W
+  L --> W
+  W --> X
+  X --> Y
+  Y --> Z
+  Z --> AB
+  AA -.used by training.-> R
+  AA -.used by training.-> V
+  AA -.used by training.-> Y

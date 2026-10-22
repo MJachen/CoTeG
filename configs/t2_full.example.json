@@ -1,0 +1,45 @@
+{
+  "seed": 42,
+  "device": "cuda",
+  "output_dir": "t2_outputs/full_seed42",
+  "data": {
+    "x_full_path": "brats_gli_met_packs/X_full_4mod_gli_met.pt",
+    "split_path": "brats_gli_met_packs/split.json"
+  },
+  "completion": {
+    "rank_s": 6,
+    "rank_m": 3,
+    "rank_n": 32,
+    "train_iterations": 2000,
+    "eval_iterations": 800,
+    "lr_train": 0.0001,
+    "lr_eval": 0.001,
+    "lambda_space": 0.001,
+    "lambda_mod": 0.0005,
+    "lambda_subject": 0.0005,
+    "lambda_tv": 0.01,
+    "tv_max_pairs": 200000,
+    "chunk_s": 2048,
+    "knn_k": 10,
+    "graph_sigma": 1.0,
+    "per_subject_batch_size": 4,
+    "log_every": 200
+  },
+  "classifier": {
+    "epochs": 200,
+    "batch_size": 32,
+    "eval_batch_size": 16,
+    "lr": 0.0001,
+    "weight_decay": 0.00001,
+    "trl_ranks": [16, 4, 4, 4, 8],
+    "num_workers": 0,
+    "log_every": 20
+  },
+  "threshold": {
+    "min": 0.05,
+    "max": 0.95,
+    "step": 0.01
+  },
+  "brain_threshold": 0.000001,
+  "save_checkpoints": true
+}

@@ -1,0 +1,45 @@
+{
+  "seed": 42,
+  "device": "cuda",
+  "output_dir": "t2_outputs/smoke_fold0",
+  "data": {
+    "x_full_path": "_smoke_cv_brats2021_packs/X_full_4mod.pt",
+    "split_path": "_smoke_cv_brats2021_packs/fold0/split.json"
+  },
+  "completion": {
+    "rank_s": 2,
+    "rank_m": 2,
+    "rank_n": 2,
+    "train_iterations": 1,
+    "eval_iterations": 1,
+    "lr_train": 0.001,
+    "lr_eval": 0.001,
+    "lambda_space": 0.001,
+    "lambda_mod": 0.0005,
+    "lambda_subject": 0.0005,
+    "lambda_tv": 0.0,
+    "tv_max_pairs": 0,
+    "chunk_s": 4096,
+    "knn_k": 2,
+    "graph_sigma": 1.0,
+    "per_subject_batch_size": 2,
+    "log_every": 1
+  },
+  "classifier": {
+    "epochs": 1,
+    "batch_size": 8,
+    "eval_batch_size": 2,
+    "lr": 0.0001,
+    "weight_decay": 0.00001,
+    "trl_ranks": [4, 2, 2, 2, 4],
+    "num_workers": 0,
+    "log_every": 1
+  },
+  "threshold": {
+    "min": 0.05,
+    "max": 0.95,
+    "step": 0.01
+  },
+  "brain_threshold": 0.000001,
+  "save_checkpoints": false
+}

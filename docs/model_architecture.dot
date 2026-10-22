@@ -1,0 +1,79 @@
+digraph ModelArchitecture {
+  graph [rankdir=TB, fontsize=12, labelloc="t", label="Tensor Completion + Graph Neural Network Medical Image Classification Pipeline"];
+  node [shape=box, style="rounded", fontsize=10];
+  edge [fontsize=9];
+
+  raw [label="Raw BraTS-style MRI cases\nT1, T1CE, T2, FLAIR + binary label"];
+  predataset [label="predataset.py\nload_case_4mod + make_folds"];
+  fullpack [label="Full tensor pack\nX_full: (N,4,H,W,D)\ny: (N,)"];
+  groups [label="modality_groups.py\n15 present-modality groups"];
+  misspacks [label="Eval missing-modality packs\nX_miss: (N,4,H,W,D)\nOmega: (N,4,1,1,1)"];
+
+  train_repr [label="Train tensor representation\nX_true_flat: (S,4,N)\nS=H*W*D"];
+  grnntc_train [label="GRNNTCtrain.py\nTucker3DModel.chunk_forward"];
+  factors [label="Non-negative Tucker factors\nG: (rS,rM,rN)\nU_S: (S,rS)\nU_M: (4,rM)\nU_N: (N,rN)"];
+  comp_loss [label="Completion train loss\nmasked MSE + spatial smoothness\n+ modality graph + subject graph"];
+  train_completed [label="Completed train tensor\nX_hat_train_5d.pt: (H,W,D,4,N)\ntucker_factors_train.pt"];
+
+  grnntc_eval [label="GRNNTCeval.py\noptimize eval U_N only"];
+  eval_completed [label="Completed val/test packs\nX_hat: (N,4,H,W,D)\nU_N: (N,rN)\nOmega mask"];
+
+  branch_ds [label="threebranchesv3.py\nCompletedTrainDataset3D"];
+  tensor_input [label="Tensor branch input\nobserved X_full * Omega\n+ completed X_hat * (1-Omega)\n(B,4,D,H,W)"];
+  convtrl [label="twotrlv2.py\nConvTRLNet.forward"];
+  conv_feat [label="3D CNN features\n(B,64,D/8,H/8,W/8)"];
+  trl [label="twotrlv2.py\nTRL.forward"];
+  zt [label="Tensor embedding z_t\n(B,8)\nbranch logits: (B,2)"];
+
+  graph_build [label="zerotoolfunc.py\nknn_graph_pytorch(U_N,k=10)"];
+  edge_index [label="edge_index adjacency\n(2,N*k)"];
+  gnn [label="twognn.py\nGNNBranch.forward\nGraphSAGE x2"];
+  zg [label="GNN embedding z_g\n(N,32)\nbranch logits: (N,2)"];
+
+  fusion_script [label="fusiontraintest_brats.py\nload frozen branches\nstream val/test groups"];
+  moe [label="MoEFusion.forward\nproj_t, proj_g, abs diff, product, Omega mask"];
+  experts [label="Tensor/GNN experts + gate alpha\nlogits = alpha*expert_t + (1-alpha)*expert_g"];
+  pred [label="Prediction logits/probability\n(B,2), P(HGG)"];
+  losses [label="Training losses\nbranch: FocalLoss / CE\nfusion: CE or FocalLoss", style="rounded,dashed"];
+  outputs [label="Metrics and saved outputs\nmetrics JSON, ROC TXT, sample CSV"];
+
+  raw -> predataset;
+  predataset -> fullpack;
+  groups -> misspacks;
+  fullpack -> misspacks;
+  fullpack -> train_repr;
+  train_repr -> grnntc_train;
+  grnntc_train -> factors;
+  factors -> comp_loss;
+  comp_loss -> train_completed;
+  misspacks -> grnntc_eval;
+  train_completed -> grnntc_eval;
+  grnntc_eval -> eval_completed;
+
+  fullpack -> branch_ds;
+  train_completed -> branch_ds;
+  groups -> branch_ds;
+  branch_ds -> tensor_input;
+  tensor_input -> convtrl;
+  convtrl -> conv_feat;
+  conv_feat -> trl;
+  trl -> zt;
+
+  factors -> graph_build;
+  eval_completed -> graph_build;
+  graph_build -> edge_index;
+  factors -> gnn;
+  edge_index -> gnn;
+  gnn -> zg;
+
+  zt -> fusion_script;
+  zg -> fusion_script;
+  eval_completed -> fusion_script;
+  fusion_script -> moe;
+  moe -> experts;
+  experts -> pred;
+  pred -> outputs;
+  losses -> zt [style=dashed, label="used by training"];
+  losses -> zg [style=dashed, label="used by training"];
+  losses -> experts [style=dashed, label="used by training"];
+}

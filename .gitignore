@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.env.*
+
+# MRI data
+*.nii
+*.nii.gz
+*.dcm
+
+# Model weights
+*.pth
+*.pt
+*.ckpt
+
+# Experiment outputs
+outputs/
+checkpoints/
+logs/
+runs/
+wandb/
+
+# Temporary files
+.DS_Store
+Thumbs.db
+
+# Matplotlib cache
+.mplconfig/
+
+# Fusion experiment outputs
+fusion_out*/
+fusion_outputs*/
+
+# Completion experiment outputs
+t2_outputs/
+_single_case_128_pack*/
+
+# Other experiment artifacts
+*.log
+*.npy
+*.npz
+*.pkl
+
+# Checkpoints and medical images
+*.pth
+*.pt
+*.ckpt
+*.nii
+*.nii.gz
+*.dcm
+
+
+# Single-case completion experiments
+_single_case_completion*/
+
+# Smoke test outputs
+_smoke*_packs/
+
+# Generated result files
+metrics_modality_groups.xlsx
+model_cropped.pdf
+_single_case_128_pack*/
+fusion_out*/
+t2_outputs/
+.mplconfig/
